@@ -1,0 +1,147 @@
+BACKTEST RESULTS - 15M Timeframe
+Period: 2020-01-01 to 2025-12-31
+Data File: XAU_15m_2020-2025.csv
+============================================================
+
+
+================================================================================
+[BOT] XAUUSD M30 TRADING BOT - INITIALIZING
+================================================================================
+📂 Loading data: XAU_15m_2020-2025.csv
+[DATE] Backtest Period: 2020-01-01 to 2025-12-31
+[TIMER]  Timeframe: 15M (5-minute candles)
+[MONEY] Starting Capital: $100,000.00
+[STATS] Leverage: 30.0:1
+[TARGET] Risk Per Trade: 1.25%
+
+[TARGET] Trading Mode: [GREEN] LONG & [RED] SHORT
+[STATS] Pullback Entry: [OK] ENABLED
+🔍 ATR Filters: [OK] ENABLED
+⏰ Time Filter: [ERROR] DISABLED
+📊 LONG Window: 5 bars | SHORT Window: 7 bars
+================================================================================
+
+[ROCKET] Starting backtest...
+
+CONFIGURED: XAUUSD from filename: XAU_15M_2020-2025.CSV
+Forex Config: XAU/USD
+Tick Value: 0.01 | Lot Size: 100 oz | Margin: 5.0%
+WARNING: Data file is XAU_15m_2020-2025.csv but strategy is configured for XAUUSD
+TRADE REPORT: temp_reports\XAU_trades_20260107_185549.txt
+🎯 DEBUG: Used window_bar_start: 2777, bars = 1
+🔍 DEBUG: entry_atr_increment = 0.018139744311694184
+🎯 DEBUG: Used window_bar_start: 3136, bars = 1
+🔍 DEBUG: entry_atr_increment = 0.46159884023225284
+🎯 DEBUG: Used window_bar_start: 10008, bars = 2
+🔍 DEBUG: entry_atr_increment = -0.03514861677973524
+🎯 DEBUG: Used window_bar_start: 11651, bars = 1
+🔍 DEBUG: entry_atr_increment = -0.18460234856825597
+🎯 DEBUG: Used window_bar_start: 11833, bars = 1
+🔍 DEBUG: entry_atr_increment = -0.011509822070201015
+🎯 DEBUG: Used window_bar_start: 17608, bars = 1
+🔍 DEBUG: entry_atr_increment = 0.11030889373667518
+🎯 DEBUG: Used window_bar_start: 19075, bars = 1
+🔍 DEBUG: entry_atr_increment = 0.2963893206284043
+🎯 DEBUG: Used window_bar_start: 19450, bars = 1
+🔍 DEBUG: entry_atr_increment = -0.15512551117267903
+🎯 DEBUG: Used window_bar_start: 19830, bars = 1
+🔍 DEBUG: entry_atr_increment = 0.01383899414117562
+🎯 DEBUG: Used window_bar_start: 28210, bars = 1
+🔍 DEBUG: entry_atr_increment = 0.0921423098818841
+🎯 DEBUG: Used window_bar_start: 29843, bars = 1
+🔍 DEBUG: entry_atr_increment = -0.014794872238727441
+🎯 DEBUG: Used window_bar_start: 32344, bars = 1
+🔍 DEBUG: entry_atr_increment = -0.1481071549091466
+🎯 DEBUG: Used window_bar_start: 33002, bars = 1
+🔍 DEBUG: entry_atr_increment = -0.024111482559417086
+🎯 DEBUG: Used window_bar_start: 33598, bars = 1
+🔍 DEBUG: entry_atr_increment = 0.1336489984943059
+🎯 DEBUG: Used window_bar_start: 35442, bars = 2
+🔍 DEBUG: entry_atr_increment = 0.3952005619074903
+🎯 DEBUG: Used window_bar_start: 35861, bars = 1
+🔍 DEBUG: entry_atr_increment = 0.06377383550901694
+🎯 DEBUG: Used window_bar_start: 37191, bars = 1
+🔍 DEBUG: entry_atr_increment = -0.007679782702349369
+🎯 DEBUG: Used window_bar_start: 39024, bars = 1
+🔍 DEBUG: entry_atr_increment = 0.3514611144065707
+🎯 DEBUG: Used window_bar_start: 43773, bars = 1
+🔍 DEBUG: entry_atr_increment = 0.3957363478084073
+🎯 DEBUG: Used window_bar_start: 44020, bars = 1
+🔍 DEBUG: entry_atr_increment = 0.037096308797853306
+🎯 DEBUG: Used window_bar_start: 46776, bars = 1
+🔍 DEBUG: entry_atr_increment = -0.08023192454865713
+🎯 DEBUG: Used window_bar_start: 48422, bars = 2
+🔍 DEBUG: entry_atr_increment = -0.09576206855469183
+🎯 DEBUG: Used window_bar_start: 56813, bars = 1
+🔍 DEBUG: entry_atr_increment = -0.21602363177526862
+🎯 DEBUG: Used window_bar_start: 61252, bars = 2
+🔍 DEBUG: entry_atr_increment = 0.14397012360343497
+🎯 DEBUG: Used window_bar_start: 61427, bars = 1
+🔍 DEBUG: entry_atr_increment = -0.18951645201772394
+🎯 DEBUG: Used window_bar_start: 63440, bars = 1
+🔍 DEBUG: entry_atr_increment = -0.06177113298790338
+🎯 DEBUG: Used window_bar_start: 64447, bars = 2
+🔍 DEBUG: entry_atr_increment = -0.034474320868153496
+🎯 DEBUG: Used window_bar_start: 67314, bars = 3
+🔍 DEBUG: entry_atr_increment = 0.21120857842048557
+🎯 DEBUG: Used window_bar_start: 70777, bars = 1
+🔍 DEBUG: entry_atr_increment = -0.09320598363879862
+🎯 DEBUG: Used window_bar_start: 77931, bars = 1
+🔍 DEBUG: entry_atr_increment = -0.1819006427837504
+🎯 DEBUG: Used window_bar_start: 80866, bars = 1
+🔍 DEBUG: entry_atr_increment = -0.22511168781336965
+🎯 DEBUG: Used window_bar_start: 83054, bars = 1
+🔍 DEBUG: entry_atr_increment = -0.0960586134874093
+🎯 DEBUG: Used window_bar_start: 83693, bars = 1
+🔍 DEBUG: entry_atr_increment = 0.059248368824507125
+🎯 DEBUG: Used window_bar_start: 86115, bars = 1
+🔍 DEBUG: entry_atr_increment = -0.07819444873952519
+🎯 DEBUG: Used window_bar_start: 86334, bars = 1
+🔍 DEBUG: entry_atr_increment = -0.46620885663564593
+🎯 DEBUG: Used window_bar_start: 87681, bars = 1
+🔍 DEBUG: entry_atr_increment = 0.48593935292463475
+🎯 DEBUG: Used window_bar_start: 90029, bars = 1
+🔍 DEBUG: entry_atr_increment = 0.00031523284459700207
+=== SUNRISE OGLE SUMMARY ===
+Trades: 37 Wins: 15 Losses: 22 WinRate: 40.54% PF: 0.93
+Final Value: 98,685.83 | Total PnL: -1,314.17
+
+=== ENTRY SIGNAL DEBUG STATS ===
+Total Entry Signals Evaluated: 0
+Blocked Entries: 0
+Successful Entries: 0
+📊 Trade report completed: 37 trades recorded
+
+================================================================================
+[STATS] BACKTEST RESULTS - XAUUSD M30 TRADING BOT
+================================================================================
+
+[ACCOUNT] PORTFOLIO PERFORMANCE:
+   Starting Capital:    $100,000.00
+   Final Value:         $98,685.83
+   Total P&L:           $-1,314.17
+   Return:              -1.31%
+
+[UP] RISK-ADJUSTED METRICS:
+   Sharpe Ratio:        -0.006
+   Max Drawdown:        9.09%
+   Max Drawdown ($):    $9,295.36
+
+[TARGET] TRADE STATISTICS:
+   Total Trades:        37
+   Winning Trades:      15 (40.54%)
+   Losing Trades:       22
+
+[MONEY] PROFITABILITY:
+   Profit Factor:       0.93
+   Gross Profit:        $17,202.14
+   Gross Loss:          $18,516.31
+   Average Win:         $1,146.81
+   Average Loss:        $-841.65
+   Expectancy/Trade:    $-35.52
+
+================================================================================
+
+[STATS] Generating performance chart...
+
+[WARNING]  Plot error: cannot import name 'warnings' from 'matplotlib.dates' (D:\goldbot\backtrader-pullback-window-xauusd\venv\Lib\site-packages\matplotlib\dates.py)

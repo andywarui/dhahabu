@@ -91,3 +91,12 @@ build/
 # Ignore large data files
 data/xauusd_M1.csv
 data/xauusd_M5.csv
+
+# Sensitive configuration files with credentials
+mt5_config.json
+config/*.json
+*.env
+.env.*
+
+# Claude Code worktree files
+.claude/

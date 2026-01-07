@@ -1,0 +1,82 @@
+BACKTEST RESULTS - 30M Timeframe
+Period: 2020-01-01 to 2025-12-31
+Data File: XAUUSD_M30_2020-2025.csv
+============================================================
+
+
+================================================================================
+[BOT] XAUUSD M30 TRADING BOT - INITIALIZING
+================================================================================
+📂 Loading data: XAUUSD_M30_2020-2025.csv
+[DATE] Backtest Period: 2020-01-01 to 2025-12-31
+[TIMER]  Timeframe: 30M (5-minute candles)
+[MONEY] Starting Capital: $100,000.00
+[STATS] Leverage: 30.0:1
+[TARGET] Risk Per Trade: 1.25%
+
+[TARGET] Trading Mode: [GREEN] LONG & [RED] SHORT
+[STATS] Pullback Entry: [OK] ENABLED
+🔍 ATR Filters: [OK] ENABLED
+⏰ Time Filter: [ERROR] DISABLED
+📊 LONG Window: 5 bars | SHORT Window: 7 bars
+================================================================================
+
+[ROCKET] Starting backtest...
+
+CONFIGURED: XAUUSD from filename: XAUUSD_M30_2020-2025.CSV
+Forex Config: XAU/USD
+Tick Value: 0.01 | Lot Size: 100 oz | Margin: 5.0%
+TRADE REPORT: temp_reports\XAUUSD_trades_20260107_185617.txt
+🎯 DEBUG: Used window_bar_start: 16744, bars = 1
+🔍 DEBUG: entry_atr_increment = -0.18843481265660267
+🎯 DEBUG: Used window_bar_start: 17076, bars = 1
+🔍 DEBUG: entry_atr_increment = 0.3493603354684509
+🎯 DEBUG: Used window_bar_start: 35952, bars = 1
+🔍 DEBUG: entry_atr_increment = -0.17197853185643464
+🎯 DEBUG: Used window_bar_start: 36927, bars = 1
+🔍 DEBUG: entry_atr_increment = -0.13399900309344415
+🎯 DEBUG: Used window_bar_start: 37786, bars = 1
+🔍 DEBUG: entry_atr_increment = -0.1201057108553023
+=== SUNRISE OGLE SUMMARY ===
+Trades: 5 Wins: 2 Losses: 3 WinRate: 40.00% PF: 0.81
+Final Value: 99,390.34 | Total PnL: -609.66
+
+=== ENTRY SIGNAL DEBUG STATS ===
+Total Entry Signals Evaluated: 0
+Blocked Entries: 0
+Successful Entries: 0
+📊 Trade report completed: 5 trades recorded
+
+================================================================================
+[STATS] BACKTEST RESULTS - XAUUSD M30 TRADING BOT
+================================================================================
+
+[ACCOUNT] PORTFOLIO PERFORMANCE:
+   Starting Capital:    $100,000.00
+   Final Value:         $99,390.34
+   Total P&L:           $-609.66
+   Return:              -0.61%
+
+[UP] RISK-ADJUSTED METRICS:
+   Sharpe Ratio:        -0.006
+   Max Drawdown:        2.66%
+   Max Drawdown ($):    $2,662.63
+
+[TARGET] TRADE STATISTICS:
+   Total Trades:        5
+   Winning Trades:      2 (40.00%)
+   Losing Trades:       3
+
+[MONEY] PROFITABILITY:
+   Profit Factor:       0.81
+   Gross Profit:        $2,621.75
+   Gross Loss:          $3,231.41
+   Average Win:         $1,310.88
+   Average Loss:        $-1,077.14
+   Expectancy/Trade:    $-121.93
+
+================================================================================
+
+[STATS] Generating performance chart...
+
+[WARNING]  Plot error: cannot import name 'warnings' from 'matplotlib.dates' (D:\goldbot\backtrader-pullback-window-xauusd\venv\Lib\site-packages\matplotlib\dates.py)

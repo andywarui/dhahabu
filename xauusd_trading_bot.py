@@ -79,8 +79,13 @@ CONFIG = {
     'risk_percent': 0.0125,             # Risk 1.25% per trade (aligned with MT5 config)
     'leverage': 30.0,                   # Broker leverage (30:1 for Gold)
 
+    # === ICT CONFIDENCE-BASED POSITION SIZING ===
+    'use_confidence_sizing': True,      # ✅ ENABLED - Scale position size by ICT confidence
+    'confidence_min_multiplier': 0.5,   # Min size at low confidence (50%)
+    'confidence_max_multiplier': 1.3,   # Max size at high confidence (130%)
+
     # === DATA & TIMEFRAME ===
-    'data_file': 'XAU_5m_converted.csv',      # Converted from JSONL - 2004-2025 data
+    'data_file': 'XAUUSD_M5_2020-2025.csv',   # 5M data 2020-2025 for backtest
     'timeframe': 'M5',                        # 5-minute timeframe for scalping
 
     # === BACKTEST PERIOD ===
@@ -121,10 +126,10 @@ CONFIG = {
     'short_max_angle': -20.0,           # Maximum angle (SHORT)
 
     # === TIME SESSION FILTER ===
-    'use_time_filter': False,           # Enable time-based filtering
-    'session_start_hour': 7,            # Session start (UTC)
+    'use_time_filter': False,           # ❌ DISABLED - Filter was too aggressive (removed 55% profitable trades)
+    'session_start_hour': 7,            # Session start (UTC) - London open
     'session_start_minute': 0,
-    'session_end_hour': 17,             # Session end (UTC)
+    'session_end_hour': 20,             # Session end (UTC) - Before late NY close (was 17, now 20)
     'session_end_minute': 0,
 
     # === TECHNICAL INDICATORS ===
@@ -148,7 +153,7 @@ CONFIG = {
 
     # === MT5 LIVE TRADING ===
     'mt5_config': 'mt5_config.json',    # MT5 configuration file
-    'mt5_check_interval': 60,           # Seconds between signal checks (1 min for M30 is fine)
+    'mt5_check_interval': 30,           # Seconds between signal checks (1 min for M30 is fine)
     'mt5_warmup_bars': 500,             # Historical bars to load for indicators
 }
 
@@ -1413,7 +1418,7 @@ class XAUUSDTradingBot:
         if not data_path.exists():
             raise FileNotFoundError(f"[ERROR] Data file not found: {data_path}")
 
-        print(f"📂 Loading data: {self.config['data_file']}")
+        print(f"[DATA] Loading data: {self.config['data_file']}")
 
         # Parse dates
         from_date = datetime.strptime(self.config['from_date'], '%Y-%m-%d')
@@ -1547,9 +1552,9 @@ class XAUUSDTradingBot:
 
         print(f"\n[TARGET] Trading Mode: {' & '.join(trading_modes)}")
         print(f"[STATS] Pullback Entry: {'[OK] ENABLED' if self.config['long_pullback_enabled'] or self.config['short_pullback_enabled'] else '[ERROR] DISABLED'}")
-        print(f"🔍 ATR Filters: {'[OK] ENABLED' if self.config['long_atr_filter'] or self.config['short_atr_filter'] else '[ERROR] DISABLED'}")
-        print(f"⏰ Time Filter: {'[OK] ENABLED' if self.config['use_time_filter'] else '[ERROR] DISABLED'}")
-        print(f"📊 LONG Window: {self.config['long_window_periods']} bars | SHORT Window: {self.config['short_window_periods']} bars")
+        print(f"[FILTER] ATR Filters: {'[OK] ENABLED' if self.config['long_atr_filter'] or self.config['short_atr_filter'] else '[ERROR] DISABLED'}")
+        print(f"[FILTER] Time Filter: {'[OK] ENABLED' if self.config['use_time_filter'] else '[ERROR] DISABLED'}")
+        print(f"[WINDOW] LONG Window: {self.config['long_window_periods']} bars | SHORT Window: {self.config['short_window_periods']} bars")
         print("="*80 + "\n")
 
     def run(self):
@@ -1663,7 +1668,65 @@ class XAUUSDTradingBot:
         except Exception as e:
             print(f"[WARNING]  Error analyzing trades: {e}")
 
+        # ICT Confidence Distribution Analysis
+        self.print_confidence_analysis()
+
         print("\n" + "="*80 + "\n")
+
+    def print_confidence_analysis(self):
+        """Analyze and print ICT confidence distribution"""
+        confidence_log = self.ict_analyzer.confidence_log
+
+        if not confidence_log:
+            print("\n[ICT] No confidence data logged")
+            return
+
+        import statistics
+
+        # Extract confidence values
+        confidences = [log['confidence_at_entry'] for log in confidence_log]
+
+        print("\n[ICT] CONFIDENCE DISTRIBUTION ANALYSIS:")
+        print(f"   Total Signals:       {len(confidences)}")
+        print(f"   Mean Confidence:     {statistics.mean(confidences):.3f}")
+        print(f"   Median Confidence:   {statistics.median(confidences):.3f}")
+        print(f"   Min Confidence:      {min(confidences):.3f}")
+        print(f"   Max Confidence:      {max(confidences):.3f}")
+        print(f"   Std Deviation:       {statistics.stdev(confidences) if len(confidences) > 1 else 0:.3f}")
+
+        # Confidence distribution buckets
+        buckets = {
+            '0.2-0.4 (Very Low)': 0,
+            '0.4-0.6 (Low)': 0,
+            '0.6-0.8 (Medium)': 0,
+            '0.8-1.0 (High)': 0
+        }
+
+        for conf in confidences:
+            if conf < 0.4:
+                buckets['0.2-0.4 (Very Low)'] += 1
+            elif conf < 0.6:
+                buckets['0.4-0.6 (Low)'] += 1
+            elif conf < 0.8:
+                buckets['0.6-0.8 (Medium)'] += 1
+            else:
+                buckets['0.8-1.0 (High)'] += 1
+
+        print("\n   Distribution:")
+        for bucket, count in buckets.items():
+            pct = (count / len(confidences)) * 100 if confidences else 0
+            print(f"   {bucket:20s} {count:3d} ({pct:5.1f}%)")
+
+        # Strategy type distribution
+        strategy_types = {}
+        for log in confidence_log:
+            st = log.get('strategy_type', 'UNKNOWN')
+            strategy_types[st] = strategy_types.get(st, 0) + 1
+
+        print("\n   Strategy Types:")
+        for st, count in sorted(strategy_types.items(), key=lambda x: x[1], reverse=True):
+            pct = (count / len(confidence_log)) * 100
+            print(f"   {st:20s} {count:3d} ({pct:5.1f}%)")
 
     def plot_results(self):
         """Display performance chart"""
@@ -2014,24 +2077,24 @@ class XAUUSDTradingBot:
 
             # Print summary
             print("\n" + "="*70)
-            print(f"📊 ICT BIAS SCORES:")
-            print(f"   🟢 BULLISH: {bias_scores['bullish']} points ({bullish_pct:.1f}%)")
-            print(f"   🔴 BEARISH: {bias_scores['bearish']} points ({bearish_pct:.1f}%)")
-            print(f"   ⚪ NEUTRAL: {bias_scores['neutral']} points ({neutral_pct:.1f}%)")
+            print(f"[ICT] BIAS SCORES:")
+            print(f"   [BULL] BULLISH: {bias_scores['bullish']} points ({bullish_pct:.1f}%)")
+            print(f"   [BEAR] BEARISH: {bias_scores['bearish']} points ({bearish_pct:.1f}%)")
+            print(f"   [NEUT] NEUTRAL: {bias_scores['neutral']} points ({neutral_pct:.1f}%)")
             print("-"*50)
 
             if self.daily_bias == "BULLISH":
-                print(f"🎯 ICT DAILY BIAS: 🟢 {self.daily_bias} (Confidence: {self.bias_confidence}%)")
-                print("   → Daily Order Flow BULLISH - Look for BUY setups")
-                print("   → Price seeking liquidity above old highs")
+                print(f"[ICT] DAILY BIAS: [BULL] {self.daily_bias} (Confidence: {self.bias_confidence}%)")
+                print("   -> Daily Order Flow BULLISH - Look for BUY setups")
+                print("   -> Price seeking liquidity above old highs")
             elif self.daily_bias == "BEARISH":
-                print(f"🎯 ICT DAILY BIAS: 🔴 {self.daily_bias} (Confidence: {self.bias_confidence}%)")
-                print("   → Daily Order Flow BEARISH - Look for SELL setups")
-                print("   → Price seeking liquidity below old lows")
+                print(f"[ICT] DAILY BIAS: [BEAR] {self.daily_bias} (Confidence: {self.bias_confidence}%)")
+                print("   -> Daily Order Flow BEARISH - Look for SELL setups")
+                print("   -> Price seeking liquidity below old lows")
             else:
-                print(f"🎯 ICT DAILY BIAS: ⚪ {self.daily_bias} (Confidence: {self.bias_confidence}%)")
-                print("   → No clear order flow - Wait for structure break")
-                print("   → Monitor for liquidity sweep to reveal intent")
+                print(f"[ICT] DAILY BIAS: [NEUT] {self.daily_bias} (Confidence: {self.bias_confidence}%)")
+                print("   -> No clear order flow - Wait for structure break")
+                print("   -> Monitor for liquidity sweep to reveal intent")
 
             print("="*70 + "\n")
 
@@ -2191,14 +2254,36 @@ class XAUUSDTradingBot:
                             print(f"   [ICT] Adjusting TP to liquidity target: {ict_target:.2f} (R:R {ict_rr:.1f})")
                             take_profit = ict_target
 
-                    # Calculate position size
-                    volume = mt5_trader.calculate_position_size(entry_price, stop_loss)
+                    # Calculate position size with ICT confidence scaling
+                    base_volume = mt5_trader.calculate_position_size(entry_price, stop_loss)
 
-                    print(f"\n[TARGET] SIGNAL DETECTED: {signal_type}")
-                    print(f"   Entry: {entry_price}")
-                    print(f"   SL: {stop_loss} ({abs(entry_price-stop_loss):.2f} points)")
-                    print(f"   TP: {take_profit} ({abs(take_profit-entry_price):.2f} points)")
-                    print(f"   Volume: {volume} lots")
+                    # Apply confidence-based sizing (Quick Win #2)
+                    if self.config.get('use_confidence_sizing', False):
+                        min_mult = self.config.get('confidence_min_multiplier', 0.5)
+                        max_mult = self.config.get('confidence_max_multiplier', 1.3)
+
+                        # Scale from min to max based on confidence (0.2-1.0 → min-max)
+                        confidence_range = 1.0 - 0.2  # 0.8 range
+                        adjusted_confidence = max(0.2, min(1.0, ict_confidence))
+                        normalized_conf = (adjusted_confidence - 0.2) / confidence_range
+
+                        confidence_multiplier = min_mult + (normalized_conf * (max_mult - min_mult))
+                        volume = base_volume * confidence_multiplier
+
+                        print(f"\n[TARGET] SIGNAL DETECTED: {signal_type}")
+                        print(f"   Entry: {entry_price}")
+                        print(f"   SL: {stop_loss} ({abs(entry_price-stop_loss):.2f} points)")
+                        print(f"   TP: {take_profit} ({abs(take_profit-entry_price):.2f} points)")
+                        print(f"   Base Volume: {base_volume:.2f} lots")
+                        print(f"   Confidence Multiplier: {confidence_multiplier:.2f}x")
+                        print(f"   Adjusted Volume: {volume:.2f} lots")
+                    else:
+                        volume = base_volume
+                        print(f"\n[TARGET] SIGNAL DETECTED: {signal_type}")
+                        print(f"   Entry: {entry_price}")
+                        print(f"   SL: {stop_loss} ({abs(entry_price-stop_loss):.2f} points)")
+                        print(f"   TP: {take_profit} ({abs(take_profit-entry_price):.2f} points)")
+                        print(f"   Volume: {volume:.2f} lots")
 
                     # Log trade entry for empirical analysis
                     trade_log_index = self.ict_analyzer.log_trade_entry(
