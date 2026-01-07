@@ -22,7 +22,19 @@ RESULTS_DIR = Path(__file__).parent / 'backtest_results'
 RESULTS_DIR.mkdir(exist_ok=True)
 
 def convert_jsonl_to_csv(jsonl_file, csv_file):
-    """Convert JSONL to CSV format for backtesting"""
+    """Convert JSONL to CSV format for backtesting - only if needed"""
+    
+    # Check if CSV already exists and is newer than JSONL
+    if csv_file.exists():
+        csv_mtime = csv_file.stat().st_mtime
+        jsonl_mtime = jsonl_file.stat().st_mtime
+        if csv_mtime >= jsonl_mtime:
+            # Count rows in existing CSV
+            with open(csv_file, 'r') as f:
+                count = sum(1 for _ in f) - 1  # Subtract header
+            print(f"  Using existing CSV ({count:,} rows)")
+            return count
+    
     print(f"  Converting {jsonl_file.name}...")
     
     count = 0
@@ -138,16 +150,45 @@ bot.run()
     return output_file
 
 def main():
+    # User-specified date range
+    BACKTEST_FROM_DATE = '2020-01-01'
+    BACKTEST_TO_DATE = '2025-12-31'  # Will use data up to latest available
+    
     print("="*60)
     print("  MULTI-TIMEFRAME BACKTEST SUITE")
     print("  Running backtests for: 1m, 5m, 15m, 30m, 1h, 4h")
+    print(f"  Date Range: {BACKTEST_FROM_DATE} to {BACKTEST_TO_DATE}")
     print("="*60)
     
     results = {}
     
     for tf, config in TIMEFRAMES.items():
         jsonl_file = DATA_DIR / config['file']
-        csv_file = DATA_DIR / f"XAU_{tf}_converted.csv"
+        # Prefer explicit 2020-2025 CSVs if available, else fall back to converted naming
+        def find_csv_for_tf(tf_name):
+            candidates = [
+                DATA_DIR / f"XAU_{tf_name}_2020-2025.csv",
+                DATA_DIR / f"XAU_{tf_name}_converted.csv",
+                DATA_DIR / f"XAU_{tf_name}_2020-2025.CSV",
+            ]
+            # special alternate names (common existing files)
+            alt_map = {
+                '5m': [DATA_DIR / 'XAUUSD_M5_2020-2025.csv', DATA_DIR / 'XAUUSD_5m_5Yea.csv', DATA_DIR / 'xauusd_M5.csv'],
+                '30m': [DATA_DIR / 'XAUUSD_M30_2020-2025.csv'],
+                '1m': [DATA_DIR / 'XAU_1m_2020-2025.csv', DATA_DIR / 'XAU_1m_converted.csv', DATA_DIR / 'xauusd_M1.csv'],
+            }
+
+            if tf_name in alt_map:
+                candidates = alt_map[tf_name] + candidates
+
+            for p in candidates:
+                if p.exists():
+                    return p
+            # fallback: use default converted name
+            return DATA_DIR / f"XAU_{tf_name}_converted.csv"
+
+        csv_file = find_csv_for_tf(tf)
+        print(f"  Using data file for {tf}: {csv_file.name}")
         
         print(f"\n{'='*60}")
         print(f"  Processing {tf.upper()} timeframe...")
@@ -165,9 +206,12 @@ def main():
             print(f"  ⚠️ SKIPPING: No data converted")
             continue
         
-        # Get date range
-        from_date, to_date = get_date_range(csv_file)
-        print(f"  Date range: {from_date} to {to_date}")
+        # Get date range from data (for info) but use specified dates
+        data_from, data_to = get_date_range(csv_file)
+        from_date = BACKTEST_FROM_DATE
+        to_date = BACKTEST_TO_DATE
+        print(f"  Data available: {data_from} to {data_to}")
+        print(f"  Backtesting: {from_date} to {to_date}")
         
         # Run backtest
         try:

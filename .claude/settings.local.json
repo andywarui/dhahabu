@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python mt5_trader.py:*)",
+      "Bash(python fix_encoding.py:*)",
+      "Bash(git filter-branch:*)",
+      "Bash(git checkout:*)",
+      "Bash(git commit:*)",
+      "Bash(python xauusd_trading_bot.py:*)",
+      "Bash(pip install:*)",
+      "Bash(cat:*)"
+    ]
+  }
+}
